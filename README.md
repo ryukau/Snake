@@ -2,7 +2,7 @@
 
 ゲームです。
 
-[遊ぶ]()
+[遊ぶ](https://ryukau.github.io/Snake/)
 
 ## 使用ライブラリ
 
