@@ -58,7 +58,7 @@ class Snake {
     canvas.context.fillStyle = "#ffa060"
     canvas.drawPoint(this.body[0][0], this.radius)
 
-    canvas.context.fillStyle = "#abc456"
+    canvas.context.fillStyle = "#1237b9"
     for (var i = 1; i < this.body.length; ++i) {
       canvas.drawPoint(this.body[i][0], this.radius)
     }
