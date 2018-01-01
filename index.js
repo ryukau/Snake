@@ -3,6 +3,8 @@ const EPS = 1e-5
 const screenMargin = 10
 const snakeLength = 1
 const snakeBodyDelay = 10
+const snakeSpeed = 1
+const snakeFullSpeed = 3
 const snakeExplodeSpeed = 5
 const popupLifetimeMax = 120
 // const end
@@ -22,8 +24,8 @@ class Snake {
     // snakeの体は2次元配列 this.body[n][m] で表現される。
     // nは体節の数。
     // mは遅延の数。
-    this.body = [this.makeDelayline(this.position)]
-    for (var i = 1; i < snakeLength - 1; ++i) {
+    this.body = []
+    for (var i = 0; i < snakeLength; ++i) {
       this.body.push(this.makeDelayline(this.position))
     }
   }
@@ -84,30 +86,6 @@ class Snake {
         this.body[i][0].add(this.body[i][1])
       }
     } else {
-      // 旋回
-      if (control.left.isActive) {
-        this.velocity.rotate(-this.speedRotation)
-      } else if (control.right.isActive) {
-        this.velocity.rotate(this.speedRotation)
-      }
-
-      // アクセル
-      if (this.speedUpTimer > 0) {
-        this.speedUpTimer -= 1
-        this.speed = 3
-      } else {
-        this.speed = 1
-      }
-
-      this.velocity.normalize().mul(this.speed)
-      this.position.add(this.velocity)
-
-      var position = this.position.clone()
-      for (var i = 0; i < this.body.length; ++i) {
-        this.body[i].push(position)
-        position = this.body[i].shift(position)
-      }
-
       if (this.isCrashing()) {
         this.isCrashed = true
 
@@ -118,6 +96,39 @@ class Snake {
             (Math.random() - 0.5) * snakeExplodeSpeed
           )
         }
+
+        return
+      }
+
+      // 旋回
+      if (control.left.isActive) {
+        this.velocity.rotate(-this.speedRotation)
+      } else if (control.right.isActive) {
+        this.velocity.rotate(this.speedRotation)
+      }
+
+      // アクセル
+      if (this.speedUpTimer > 0) {
+        this.speedUpTimer -= 1
+        this.speed = snakeFullSpeed
+      } else {
+        this.speed = snakeSpeed
+      }
+
+      this.velocity.normalize().mul(this.speed)
+      this.position.add(this.velocity)
+
+      var position = this.position.clone()
+      var bodyLength = this.body.length - 1
+      for (var i = 0; i < bodyLength; ++i) {
+        this.body[i].unshift(position)
+        position = this.body[i].pop(position)
+      }
+
+      // 最後尾はディレイしない。
+      var last = this.body[this.body.length - 1]
+      for (var i = 0; i < last.length; ++i) {
+        last[i] = position
       }
     }
   }
